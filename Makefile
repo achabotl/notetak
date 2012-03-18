@@ -22,7 +22,7 @@ mandir = $(sharedir)/man
 man1dir = $(mandir)/man1
 datadir = $(sharedir)/notetak
 libdir = $(prefix)/lib
-pythondir = $(libdir)/python2.4
+pythondir = $(libdir)/python2.7
 sitedir = $(pythondir)/site-packages
 appsdir = $(sharedir)/applications
 
