@@ -304,7 +304,7 @@ class NoteList:
 
     def note_filename(self, dirname, note):
         """Return the filename for a note, including the path"""
-        return os.path.join(dirname, note.id + ".note")
+        return os.path.join(dirname, note.id + ".md")
 
     def get_notes(self):
         """Return all notes as a Python list"""
