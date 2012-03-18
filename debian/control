@@ -1,0 +1,15 @@
+Source: notetak
+Maintainer: Lars Wirzenius <liw@iki.fi>
+Section: utils
+Priority: optional
+Standards-Version: 3.7.2
+
+Package: notetak
+Architecture: all
+Depends: python2.4, python-gnome2, python-gtk2, python-glade2
+Description: note taking application for GNOME
+ Notetak is a simple application for GNOME for taking notes, and managing
+ them efficiently.
+ .
+ Homepage: http://liw.iki.fi/liw/notetak/
+

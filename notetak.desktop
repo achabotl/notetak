@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Encoding=UTF-8
+Name=Notetak
+GenericName=Note taking and searching
+Icon=notetak.png
+Exec=notetak %F
+Categories=GNOME;Utility

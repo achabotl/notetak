@@ -1,0 +1,38 @@
+#!/usr/bin/make -f
+
+package=notetak
+
+upstream=$(shell sed -n '/^VERSION/s/.*"\([^ ]*\)"$$/\1/p' notetak.py)
+debian=$(shell dpkg-parsechangelog | sed -n 's/Version: \(.*\)-[^-]*$$/\1/p')
+
+all:
+
+build: checkversion
+
+binary: binary-arch binary-indep
+
+binary-indep:
+	rm -rf debian/tmp
+	install -d debian/tmp/DEBIAN
+	install -d debian/tmp/usr/share/doc/$(package)
+	$(MAKE) prefix=/usr DESTDIR=debian/tmp install
+	sed -i -e 's:^GLADE = .*:GLADE = "/usr/share/notetak/notetak.glade":' \
+	    debian/tmp/usr/lib/python2.4/site-packages/notetak.py
+	install -m 0644 debian/changelog \
+	    debian/tmp/usr/share/doc/$(package)/changelog.Debian
+	gzip -9 debian/tmp/usr/share/doc/$(package)/*
+	install -m 0644 debian/copyright debian/tmp/usr/share/doc/$(package)/.
+	dpkg-gencontrol -isp
+	chown -R root:root debian/tmp
+	chmod -R o-s,go=u,go-ws debian/tmp
+	dpkg --build debian/tmp ..
+
+binary-arch:
+
+clean:
+	rm -rf debian/tmp debian/files
+
+checkversion:
+	if [ "$(upstream)" != "$(debian)" ]; then \
+	    echo "upstream $(upstream) != debian $(debian) version"; \
+	    exit 1; fi

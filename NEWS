@@ -1,0 +1,16 @@
+NEWS for Notetak
+
+This file won't be updated for now, see the bzr commit messages instead,
+e.g., at http://liw.iki.fi/liw/notetak/notetak.changelog.
+
+Version 0.3, released 2006-12-27
+
+    * After deleting note, focus now gets put into title area.
+
+Version 0.2, released 2006-12-27
+
+    * Includes a uuid module, which is missing from Python 2.4.
+
+Version 0.1, released 2006-12-27
+
+    * Text editing area now uses monospace font.
