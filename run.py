@@ -1,4 +1,4 @@
-#!/usr/bin/python2.4
+#!/usr/bin/python2.7
 #
 # Copyright (C) 2006, 2007  Lars Wirzenius <liw@iki.fi>
 #
