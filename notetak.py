@@ -65,7 +65,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 FONT = "Monospace"
 GCONFDIR = "/apps/NotetakDevelopment"
-
+FILETYPE = ".md"
 
 # This is a kludge. Python 2.5 will include a uuid module.
 sys.path.append(os.path.dirname(GLADE))
@@ -115,8 +115,8 @@ class Note:
         f.close()
         
         basename = os.path.basename(filename)
-        if basename.endswith(".note"):
-            self.id = basename[:-len(".note")]
+        if basename.endswith(FILETYPE):
+            self.id = basename[:-len(FILETYPE)]
         else:
             self.id = basename
         
@@ -304,7 +304,7 @@ class NoteList:
 
     def note_filename(self, dirname, note):
         """Return the filename for a note, including the path"""
-        return os.path.join(dirname, note.id + ".md")
+        return os.path.join(dirname, note.id + FILETYPE)
 
     def get_notes(self):
         """Return all notes as a Python list"""
