@@ -159,8 +159,7 @@ class Note:
         if self.buffer is None:
             return ""
         start, end = self.buffer.get_bounds()
-        text = self.filename + " " + self.buffer.get_text(start, end)
-        return text
+        return self.buffer.get_text(start, end)
 
     def set_text(self, text):
         """Change the entire contents of a note, including first line"""
