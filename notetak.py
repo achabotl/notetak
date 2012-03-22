@@ -96,7 +96,8 @@ class Note:
     """
 
     def __init__(self):
-        logging.debug("Created Note, id=%s" % self.filename)
+        self.id = uuid.uuid4()
+        logging.debug("Created Note, id=%s" % self.id)
         self.buffer = None
         self.mtime = None
         self.dirty = False
