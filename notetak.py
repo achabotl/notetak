@@ -96,8 +96,7 @@ class Note:
     """
 
     def __init__(self):
-        self.id = str(uuid.uuid4())
-        logging.debug("Created Note, id=%s" % self.id)
+        logging.debug("Created Note, id=%s" % self.filename)
         self.buffer = None
         self.mtime = None
         self.dirty = False
@@ -106,37 +105,38 @@ class Note:
         self.timeout_callback = None
         self.immediate_change_callback = None
 
-    def load(self):
+    def load(self,filename):
         """Load note from disk into memory"""
 
-        logging.debug("Loading note %s from %s" % (self.id, self.filename))
-        f = file(self.filename, "r")
+        logging.debug("Loading note %s" % (self.filename))
+        f = file(filename, "r")
         data = f.read()
         f.close()
         
-        basename = os.path.basename(self.filename)
+        basename = os.path.basename(filename)
         if basename.endswith(FILETYPE):
-            self.id = basename[:-len(FILETYPE)]
+            self.filename = basename[:-len(FILETYPE)]
         else:
-            self.id = basename
+            self.filename = basename
         
         self.set_text(data)
-        self.mtime = os.stat(self.filename).st_mtime
+        self.mtime = os.stat(filename).st_mtime
 
-    def save(self):
+    def save(self,dirname):
         """Save note from memory to disk"""
 
-        logging.debug("Saving note %s to %s" % (self.id, self.filename))        
-        f = file(self.filename, "w")
+        logging.debug("Saving note to %s" % (self.filename))        
+        fullpath = os.path.join(dirname, self.filename,FILETYPE)
+        f = file(fullpath, "w")
         f.write(self.get_text())
         f.close()
-        os.utime(self.filename, (self.mtime, self.mtime))
+        os.utime(fullpath, (self.mtime, self.mtime))
         self.dirty = False
 
-    def remove(self):
+    def remove(self,dirname):
         """Remove note from disk"""
         
-        logging.debug("Remove note %s from %s" % (self.id, self.filename))
+        logging.debug("Remove note %s" % (self.filename))
         if os.path.exists(self.filename):
             os.remove(self.filename)
 
@@ -150,7 +150,6 @@ class Note:
         if self.buffer is None:
             return ""
         title = self.filename
-        title = title[:-FILETYPE.len()]
         return title
 
     def get_text(self):
@@ -248,7 +247,14 @@ class Note:
         
     def set_filename(self, filename):
         """Set note filename"""
-        self.filename = filename + FILETYPE
+        if filename.endswith(FILETYPE):
+            self.filename = filename[:-len(FILETYPE)]    
+        else:
+            self.filename = filename
+    
+    def get_full_filename(self,dirname):
+        """Return the filename with path to file and extension"""
+        return os.path.join(dirname, self.filename, FILETYPE)
 
 
 class TooManyVisibilityColumns(Exception):
@@ -305,7 +311,7 @@ class NoteList:
 
     def note_filename(self, dirname, note):
         """Return the filename for a note, including the path"""
-        return os.path.join(dirname, note.filename)
+        return note.get_full_filename(dirname)
 
     def get_notes(self):
         """Return all notes as a Python list"""
@@ -335,7 +341,7 @@ class NoteList:
 
     def append_note(self, note):
         """Add a new note to the end of the list"""
-        logging.debug("Adding note %s to NoteList" % note.id)
+        logging.debug("Adding note %s to NoteList" % note.filename)
         iter = self.liststore.append()
         for i in range(self.MAX_VISIBILITY_COLUMNS):
             self.liststore.set_value(iter, i, False)
@@ -355,17 +361,17 @@ class NoteList:
 
     def remove_note(self, dirname, note):
         """Remove a note from the list"""
-        logging.debug("Removing note %s from NoteList" % note.id)
+        logging.debug("Removing note %s from NoteList" % note.filename)
         iter = self.liststore.get_iter_first()
         while iter:
             if self.liststore.get_value(iter, self.NOTE_COLUMN) == note:
                 self.liststore.remove(iter)
                 if dirname is not None:
-                    note.remove(self.note_filename(dirname, note))
+                    note.remove(dirname)
                 self.dirty = True
                 return
             iter = self.liststore.iter_next(iter)
-        logging.debug("Oops, note %s not in NoteList, can't remove" % note.id)
+        logging.debug("Oops, note %s not in NoteList, can't remove" % note.filename)
 
     def clear(self):
         """Remove all notes from the list"""
@@ -379,7 +385,7 @@ class NoteList:
             fullname = os.path.join(dirname, basename)
             if os.path.isfile(fullname):
                 note = Note()
-                note.load(fullname)
+                note.load(basename)
                 self.append_note(note)
         self.make_clean()
         logging.debug("Done loading notes from %s" % dirname)
@@ -391,7 +397,7 @@ class NoteList:
             logging.debug("Creating %s" % dirname)
             os.mkdir(dirname)
         for note in self.get_notes():
-            note.save(self.note_filename(dirname, note))
+            note.save(dirname)
         self.make_clean()
         logging.debug("Done saving notes to %s" % dirname)
 
@@ -403,7 +409,7 @@ class NoteList:
             os.mkdir(dirname)
         for note in self.get_notes():
             if note.dirty:
-                note.save(self.note_filename(dirname, note))
+                note.save(dirname)
         self.make_clean()
         logging.debug("Done saving dirty notes to %s" % dirname)
 
