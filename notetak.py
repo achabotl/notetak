@@ -833,6 +833,7 @@ class Window:
         search_text = self.search_field.get_text()
         if search_text:
             note = Note()
+            note.set_text("")
             note.set_filename(search_text)
             self.buffer.place_cursor(note.buffer.get_end_iter())
             self.app.notelist.append_note(note)
