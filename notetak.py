@@ -127,7 +127,7 @@ class Note:
         """Save note from memory to disk"""
 
         logging.debug("Saving note to %s" % (self.filename))        
-        fullpath = os.path.join(dirname, self.filename,FILETYPE)
+        fullpath = os.path.join(dirname, (self.filename + FILETYPE))
         f = file(fullpath, "w")
         f.write(self.get_text())
         f.close()
