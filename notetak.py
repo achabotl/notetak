@@ -383,7 +383,7 @@ class NoteList:
     def load(self, dirname):
         """Load all notes into memory"""
         logging.debug("Loading notes from %s" % dirname)
-        for basename in os.listdir(dirname)
+        for basename in os.listdir(dirname):
             if not basename == "Notes & Settings"
                 fullname = os.path.join(dirname, basename)
                 if os.path.isfile(fullname):
