@@ -162,7 +162,7 @@ class Note:
         return self.buffer.get_text(start, end)
 
     def set_text(self, text):
-        """Change the entire contents of a note, including first line"""
+        """Change the entire contents of a note, including first line/title"""
         
         if self.buffer is None:
             self.buffer = gtk.TextBuffer()
@@ -201,6 +201,7 @@ class Note:
         
         start, end = self.buffer.get_bounds()
         text = self.buffer.get_text(start, end)
+        text = text + " " + self.filename
         text = text.lower()
         for word in pattern:
             if word.startswith("!") and word != "!":
