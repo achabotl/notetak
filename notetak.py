@@ -163,7 +163,7 @@ class Note:
         return text
 
     def set_text(self, text):
-        """Change the entire contents of a note, including first line/title"""
+        """Change the entire contents of a note, including first line"""
         
         if self.buffer is None:
             self.buffer = gtk.TextBuffer()
@@ -833,7 +833,6 @@ class Window:
         search_text = self.search_field.get_text()
         if search_text:
             note = Note()
-            note.set_text(search_text + "\n")
             note.set_filename(search_text)
             note.buffer.place_cursor(note.buffer.get_end_iter())
             self.app.notelist.append_note(note)
