@@ -386,7 +386,7 @@ class NoteList:
             fullname = os.path.join(dirname, basename)
             if os.path.isfile(fullname):
                 note = Note()
-                note.load(basename)
+                note.load(fullname)
                 self.append_note(note)
         self.make_clean()
         logging.debug("Done loading notes from %s" % dirname)
