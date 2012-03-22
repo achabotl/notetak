@@ -109,7 +109,7 @@ class Note:
     def load(self,filename):
         """Load note from disk into memory"""
 
-        logging.debug("Loading note %s" % (self.filename))
+        logging.debug("Loading note %s" % (filename))
         f = file(filename, "r")
         data = f.read()
         f.close()
