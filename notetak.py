@@ -834,7 +834,7 @@ class Window:
         if search_text:
             note = Note()
             note.set_filename(search_text)
-            note.buffer.place_cursor(note.buffer.get_end_iter())
+            self.buffer.place_cursor(note.buffer.get_end_iter())
             self.app.notelist.append_note(note)
             self.refilter()
             self.select_note(note)
