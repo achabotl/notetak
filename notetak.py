@@ -106,39 +106,39 @@ class Note:
         self.timeout_callback = None
         self.immediate_change_callback = None
 
-    def load(self, filename):
+    def load(self):
         """Load note from disk into memory"""
 
-        logging.debug("Loading note %s from %s" % (self.id, filename))
-        f = file(filename, "r")
+        logging.debug("Loading note %s from %s" % (self.id, self.filename))
+        f = file(self.filename, "r")
         data = f.read()
         f.close()
         
-        basename = os.path.basename(filename)
+        basename = os.path.basename(self.filename)
         if basename.endswith(FILETYPE):
             self.id = basename[:-len(FILETYPE)]
         else:
             self.id = basename
         
         self.set_text(data)
-        self.mtime = os.stat(filename).st_mtime
+        self.mtime = os.stat(self.filename).st_mtime
 
-    def save(self, filename):
+    def save(self):
         """Save note from memory to disk"""
 
-        logging.debug("Saving note %s to %s" % (self.id, filename))        
-        f = file(filename, "w")
+        logging.debug("Saving note %s to %s" % (self.id, self.filename))        
+        f = file(self.filename, "w")
         f.write(self.get_text())
         f.close()
-        os.utime(filename, (self.mtime, self.mtime))
+        os.utime(self.filename, (self.mtime, self.mtime))
         self.dirty = False
 
-    def remove(self, filename):
+    def remove(self):
         """Remove note from disk"""
         
-        logging.debug("Remove note %s from %s" % (self.id, filename))
-        if os.path.exists(filename):
-            os.remove(filename)
+        logging.debug("Remove note %s from %s" % (self.id, self.filename))
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
 
     def get_buffer(self):
         """Return the GtkTextBuffer for this note"""
@@ -149,11 +149,8 @@ class Note:
         
         if self.buffer is None:
             return ""
-        line0 = self.buffer.get_iter_at_line(0)
-        line1 = self.buffer.get_iter_at_line(1)
-        title = self.buffer.get_text(line0, line1)
-        if title.endswith("\n"):
-            title = title[:-1]
+        title = self.filename
+        title = title[:-FILETYPE.len()]
         return title
 
     def get_text(self):
@@ -248,6 +245,10 @@ class Note:
     def set_immediate_change_callback(self, callback):
         """Set function to be called immediately on any change"""
         self.immediate_change_callback = callback
+        
+    def set_filename(self, filename):
+        """Set note filename"""
+        self.filename = filename + FILETYPE
 
 
 class TooManyVisibilityColumns(Exception):
@@ -304,7 +305,7 @@ class NoteList:
 
     def note_filename(self, dirname, note):
         """Return the filename for a note, including the path"""
-        return os.path.join(dirname, note.id + FILETYPE)
+        return os.path.join(dirname, note.filename)
 
     def get_notes(self):
         """Return all notes as a Python list"""
@@ -825,6 +826,7 @@ class Window:
         if search_text:
             note = Note()
             note.set_text(search_text + "\n")
+            note.set_filename(search_text)
             note.buffer.place_cursor(note.buffer.get_end_iter())
             self.app.notelist.append_note(note)
             self.refilter()
